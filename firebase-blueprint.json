@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "User profile information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "admin", "expert"] },
+        "verified": { "type": "boolean" },
+        "verificationCode": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "country": { "type": "string" },
+        "dateOfBirth": { "type": "string" },
+        "omtBalance": { "type": "number", "description": "OMETS Token balance" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "enrollments": {
+      "title": "Enrollment",
+      "description": "Course enrollment record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "enrolledAt": { "type": "string", "format": "date-time" },
+        "progress": { "type": "number" }
+      },
+      "required": ["userId", "courseId", "enrolledAt"]
+    },
+    "courses": {
+      "title": "Course",
+      "description": "Engineering course information.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "instructor": { "type": "string" },
+        "duration": { "type": "string" },
+        "price": { "type": "number" },
+        "image": { "type": "string" },
+        "category": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["Beginner", "Intermediate", "Advanced"] }
+      },
+      "required": ["title", "description", "instructor", "price"]
+    },
+    "workshops": {
+      "title": "Workshop",
+      "description": "Engineering workshop information.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "instructor": { "type": "string" },
+        "description": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["title", "date", "instructor"]
+    },
+    "consultations": {
+      "title": "Consultation",
+      "description": "Consultation booking information.",
+      "type": "object",
+      "properties": {
+        "category": { "type": "string" },
+        "expertId": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "problem": { "type": "string" },
+        "userId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed"] }
+      },
+      "required": ["category", "expertId", "date", "time", "userId", "status"]
+    },
+    "forumPosts": {
+      "title": "Forum Post",
+      "description": "Community forum post information.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "likes": { "type": "number" },
+        "commentsCount": { "type": "number" }
+      },
+      "required": ["title", "content", "authorId", "authorName", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profile document."
+    },
+    "/courses/{courseId}": {
+      "schema": "courses",
+      "description": "Course document."
+    },
+    "/workshops/{workshopId}": {
+      "schema": "workshops",
+      "description": "Workshop document."
+    },
+    "/consultations/{consultationId}": {
+      "schema": "consultations",
+      "description": "Consultation booking document."
+    },
+    "/forumPosts/{postId}": {
+      "schema": "forumPosts",
+      "description": "Forum post document."
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "enrollments",
+      "description": "User course enrollment document."
+    }
+  }
+}
