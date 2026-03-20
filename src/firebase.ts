@@ -14,13 +14,20 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize FirebaseSDK
+// Initialize Firebase SDK
 const app = initializeApp(firebaseConfig);
 
-// Initialize Analytics safely
-export const analytics = typeof window !== 'undefined' ? isSupported().then(yes => yes ? getAnalytics(app) : null) : Promise.resolve(null);
-
+// Initialize Analytics safely - keep it simple and non-breaking
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
+// Check for analytics support and initialize if possible
+let analyticsInstance: any = null;
+if (typeof window !== 'undefined') {
+  isSupported().then(yes => {
+    if (yes) analyticsInstance = getAnalytics(app);
+  }).catch(err => console.warn('Firebase Analytics not supported:', err));
+}
+
+export const analytics = analyticsInstance;
 export default app;
