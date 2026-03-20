@@ -3,6 +3,17 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Mail, Lock, User as UserIcon, ShieldCheck } from 'lucide-react';
 
+const formatAuthError = (err: any): string => {
+  const msg = err.message || '';
+  if (msg.includes('auth/email-already-in-use')) return 'This email is already registered. Please sign in instead.';
+  if (msg.includes('auth/invalid-email')) return 'Please enter a valid email address.';
+  if (msg.includes('auth/invalid-credential')) return 'Incorrect email or password.';
+  if (msg.includes('auth/user-not-found') || msg.includes('auth/wrong-password')) return 'Incorrect email or password.';
+  if (msg.includes('auth/weak-password')) return 'Your password is too weak. Please use a stronger password.';
+  if (msg.includes('auth/too-many-requests')) return 'Too many failed attempts. Please try again later.';
+  return 'Authentication failed. Please try again.';
+};
+
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +35,7 @@ export const Login = () => {
     try {
       await signInWithEmail(email, password);
     } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -132,7 +143,7 @@ export const Register = () => {
     try {
       await registerWithEmail(formData.email, formData.password, formData.firstName, formData.lastName);
     } catch (err: any) {
-      setError(err.message || 'Failed to register');
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
