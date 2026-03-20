@@ -3,20 +3,15 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getAnalytics } from 'firebase/analytics';
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC_b2Pi-CvwfXLZFz0tGTx1UoHUajB1kPU",
-  authDomain: "omets-25229.firebaseapp.com",
-  projectId: "omets-25229",
-  storageBucket: "omets-25229.firebasestorage.app",
-  messagingSenderId: "784710492843",
-  appId: "1:784710492843:web:6e677d46f8a7ba3c7dcdee",
-  measurementId: "G-JVSYG9LH9E"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
