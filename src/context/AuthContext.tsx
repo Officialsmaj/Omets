@@ -95,6 +95,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Send verification email via backend
+    await sendVerificationEmail(email, code);
+
+    setUser(newUser);
+  };
+
+  const sendVerificationEmail = async (email: string, code: string) => {
     try {
       const res = await fetch('/api/auth/send-verification', {
         method: 'POST',
@@ -106,8 +112,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Failed to send verification email:', error);
       alert(`Backend unavailable (GitHub Pages mode). Your verification code is: ${code}`);
     }
-
-    setUser(newUser);
   };
 
   const signInWithEmail = async (email: string, pass: string) => {
@@ -162,17 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       // Send verification email via backend
-      try {
-        const res = await fetch('/api/auth/send-verification', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: user.email, code }),
-        });
-        if (!res.ok) throw new Error('Backend unavailable');
-      } catch (error) {
-        console.error('Failed to send verification email:', error);
-        alert(`Backend unavailable (GitHub Pages mode). Your verification code is: ${code}`);
-      }
+      await sendVerificationEmail(user.email!, code);
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, `users/${auth.currentUser.uid}`);
       throw error;
