@@ -227,9 +227,21 @@ export const Register = () => {
 export const Verify = () => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState('');
-  const { verifyCode, user } = useAuth();
+  const [timer, setTimer] = useState(30);
+  const { verifyCode, resendCode, user } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -246,6 +258,20 @@ export const Verify = () => {
       setError(err.message || 'Verification failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (timer > 0 || resending) return;
+    setResending(true);
+    setError('');
+    try {
+      await resendCode();
+      setTimer(30); // Reset countdown
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend code');
+    } finally {
+      setResending(false);
     }
   };
 
@@ -296,7 +322,14 @@ export const Verify = () => {
       </form>
 
       <p className="text-center text-sm text-slate-500">
-        Didn't receive the code? <button className="text-emerald-600 font-bold hover:underline">Resend Code</button>
+        Didn't receive the code?{' '}
+        <button
+          onClick={handleResend}
+          disabled={timer > 0 || resending}
+          className="text-emerald-600 font-bold hover:underline disabled:text-slate-400 disabled:no-underline"
+        >
+          {resending ? 'Sending...' : timer > 0 ? `Resend Code (${timer}s)` : 'Resend Code'}
+        </button>
       </p>
     </div>
   );

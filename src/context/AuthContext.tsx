@@ -12,6 +12,7 @@ interface AuthContextType {
   registerWithEmail: (email: string, pass: string, firstName: string, lastName: string) => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   verifyCode: (code: string) => Promise<boolean>;
+  resendCode: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -148,12 +149,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
+  const resendCode = async () => {
+    if (!auth.currentUser || !user) return;
+
+    // Generate new 6-digit verification code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    try {
+      // Update Firestore with new code
+      await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+        verificationCode: code,
+      });
+
+      // Send verification email via backend
+      try {
+        const res = await fetch('/api/auth/send-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, code }),
+        });
+        if (!res.ok) throw new Error('Backend unavailable');
+      } catch (error) {
+        console.error('Failed to send verification email:', error);
+        alert(`Backend unavailable (GitHub Pages mode). Your verification code is: ${code}`);
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `users/${auth.currentUser.uid}`);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     await auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signInWithGoogle, registerWithEmail, signInWithEmail, verifyCode, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, registerWithEmail, signInWithEmail, verifyCode, resendCode, signOut }}>
       {children}
     </AuthContext.Provider>
   );
