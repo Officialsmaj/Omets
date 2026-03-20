@@ -4,13 +4,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, Mail, Lock, User as UserIcon, ShieldCheck } from 'lucide-react';
 
 const formatAuthError = (err: any): string => {
-  const msg = err.message || '';
+  const msg = String(err.message || err.code || '');
   if (msg.includes('auth/email-already-in-use')) return 'This email is already registered. Please sign in instead.';
   if (msg.includes('auth/invalid-email')) return 'Please enter a valid email address.';
   if (msg.includes('auth/invalid-credential')) return 'Incorrect email or password.';
   if (msg.includes('auth/user-not-found') || msg.includes('auth/wrong-password')) return 'Incorrect email or password.';
   if (msg.includes('auth/weak-password')) return 'Your password is too weak. Please use a stronger password.';
   if (msg.includes('auth/too-many-requests')) return 'Too many failed attempts. Please try again later.';
+  if (msg.includes('auth/network-request-failed')) return 'Network error. Please check your internet connection.';
+  if (msg.includes('Backend unavailable')) return 'Backend service is unavailable. Please check the alert for your verification code.';
+  if (msg.includes('permission-denied')) return 'Database access denied. Your profile might be partially saved.';
   return 'Authentication failed. Please try again.';
 };
 

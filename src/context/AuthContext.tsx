@@ -28,18 +28,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
             setUser(userDoc.data() as User);
-          } else if (firebaseUser.providerData[0]?.providerId === 'google.com') {
+          } else {
+            // Create a default user doc if missing (for any provider)
             const newUser: User = {
               uid: firebaseUser.uid,
               email: firebaseUser.email,
-              displayName: firebaseUser.displayName,
+              displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
               photoURL: firebaseUser.photoURL,
               role: firebaseUser.email === 'officialsmaj@gmail.com' ? 'admin' : 'user',
-              verified: true, // Google users are pre-verified
-              omtBalance: 100, // Welcome bonus
+              verified: firebaseUser.emailVerified || (firebaseUser.providerData[0]?.providerId === 'google.com'),
+              omtBalance: 100,
             };
-            await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-            setUser(newUser);
+            try {
+              await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
+              setUser(newUser);
+            } catch (err) {
+              console.error('Failed to auto-create user document:', err);
+              // Fallback to local state if Firestore write fails
+              setUser(newUser);
+            }
           }
         } catch (error) {
           handleFirestoreError(error, OperationType.GET, `users/${firebaseUser.uid}`);
@@ -107,6 +114,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
     if (userDoc.exists()) {
       setUser(userDoc.data() as User);
+    } else {
+      // Document will be created by onAuthStateChanged, but we set it here for immediate feedback
+      const newUser: User = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'User',
+        photoURL: userCredential.user.photoURL,
+        role: userCredential.user.email === 'officialsmaj@gmail.com' ? 'admin' : 'user',
+        verified: userCredential.user.emailVerified || false,
+        omtBalance: 100,
+      };
+      setUser(newUser);
     }
   };
 
