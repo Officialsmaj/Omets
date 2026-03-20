@@ -25,7 +25,7 @@ import { Login, Register, Verify } from './pages/Auth';
 import { DatabaseSeeder } from './components/DatabaseSeeder';
 
 export default function App() {
-  const basename = import.meta.env.VITE_GITHUB_PAGES === 'true' ? '/Omets' : '';
+  const basename = import.meta.env.VITE_GITHUB_PAGES === 'true' ? '/omets' : '';
   return (
     <AuthProvider>
       <DatabaseSeeder />
