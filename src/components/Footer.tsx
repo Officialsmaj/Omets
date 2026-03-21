@@ -60,7 +60,7 @@ export default function Footer() {
           {/* Column 1: Brand */}
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center">
-              <img src={logo} alt="OMETS Logo" className="h-10 w-auto" />
+              <img src={logo} alt="OMETS Logo" className="h-16 w-auto" />
             </Link>
             <p className="text-sm text-slate-600 leading-relaxed">
               Online Mechanical Engineering and Technology Services. Empowering engineers worldwide with knowledge, collaboration, and expert consultation.
