@@ -38,7 +38,8 @@ const AuthLoader = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default function App() {
-  const basename = import.meta.env.VITE_GITHUB_PAGES === 'true' ? '/omets' : '';
+  const rawBase = import.meta.env.BASE_URL || '/';
+  const basename = rawBase === '/' ? '' : rawBase.replace(/\/$/, '');
   return (
     <AuthProvider>
       <DatabaseSeeder />
