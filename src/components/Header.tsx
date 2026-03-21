@@ -45,8 +45,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo */}
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="OMETS Logo" className="h-14 w-auto" />
+        <Link to="/" className="relative flex h-16 w-32 items-center">
+          <img 
+            src={logo} 
+            alt="OMETS Logo" 
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-[90px] w-auto max-w-none transition-transform hover:scale-105" 
+          />
         </Link>
 
         {/* Center: Desktop Menu */}
