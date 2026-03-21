@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Linkedin, Youtube, Twitter, Facebook, Instagram, Mail, Phone, MapPin, CheckCircle2, Loader2 } from 'lucide-react';
 
+import logo from '../assets/logo.png';
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
@@ -57,11 +59,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-4">
           {/* Column 1: Brand */}
           <div className="flex flex-col gap-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-xl">
-                O
-              </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">OMETS</span>
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="OMETS Logo" className="h-10 w-auto" />
             </Link>
             <p className="text-sm text-slate-600 leading-relaxed">
               Online Mechanical Engineering and Technology Services. Empowering engineers worldwide with knowledge, collaboration, and expert consultation.

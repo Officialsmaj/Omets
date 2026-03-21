@@ -9,6 +9,8 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import logo from '../assets/logo.png';
+
 export default function Header() {
   const { user, signInWithGoogle, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,11 +45,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left: Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold text-xl">
-            O
-          </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">OMETS</span>
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="OMETS Logo" className="h-10 w-auto" />
         </Link>
 
         {/* Center: Desktop Menu */}
