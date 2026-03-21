@@ -15,6 +15,7 @@ export default function Header() {
   const { user, signInWithGoogle, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
@@ -93,12 +94,12 @@ export default function Header() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           <div className="relative flex items-center">
             {isSearchOpen && (
               <form
                 onSubmit={handleSearch}
-                className="absolute right-full mr-2 hidden sm:block"
+                className="absolute right-full mr-2 z-50"
               >
                 <input
                   autoFocus
@@ -106,7 +107,7 @@ export default function Header() {
                   placeholder="Search courses..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm focus:border-emerald-600 focus:outline-none lg:w-64"
+                  className="w-40 sm:w-48 lg:w-64 rounded-lg border border-black/10 bg-white px-3 py-1.5 text-sm focus:border-emerald-600 focus:outline-none shadow-lg animate-in fade-in slide-in-from-right-2"
                 />
               </form>
             )}
@@ -121,9 +122,38 @@ export default function Header() {
             </button>
           </div>
           
-          <button className="rounded-full p-2 text-slate-600 hover:bg-slate-100">
-            <Bell className="h-5 w-5" />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className={cn(
+                "rounded-full p-2 text-slate-600 hover:bg-slate-100 transition-colors",
+                isNotificationsOpen && "bg-slate-100 text-emerald-600"
+              )}
+            >
+              <Bell className="h-5 w-5" />
+            </button>
+            {isNotificationsOpen && (
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 rounded-2xl border border-black/5 bg-white p-4 shadow-xl animate-in fade-in slide-in-from-top-2 z-50">
+                <div className="flex items-center justify-between mb-4 border-b border-black/5 pb-2">
+                  <h3 className="font-bold text-slate-900">Notifications</h3>
+                  <span className="text-xs font-medium text-emerald-600">Mark all as read</span>
+                </div>
+                <div className="flex flex-col gap-4 py-2">
+                  <div className="flex gap-3 items-start">
+                    <div className="h-2 w-2 mt-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-bold text-slate-900">Welcome to OMETS!</p>
+                      <p className="text-xs text-slate-500">Thank you for joining our engineering community. Get started by browsing our latest courses.</p>
+                      <p className="text-[10px] text-slate-400 mt-1">Just now</p>
+                    </div>
+                  </div>
+                </div>
+                <button className="w-full mt-4 py-2 text-sm font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors">
+                  View All Notifications
+                </button>
+              </div>
+            )}
+          </div>
 
           {user ? (
             <div className="relative">
