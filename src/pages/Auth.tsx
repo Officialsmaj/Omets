@@ -14,6 +14,12 @@ const formatAuthError = (err: any): string => {
   if (msg.includes('auth/network-request-failed')) return 'Network error. Please check your internet connection.';
   if (msg.includes('Backend unavailable')) return 'Backend service is unavailable. Please check the alert for your verification code.';
   if (msg.includes('permission-denied')) return 'Database access denied. Your profile might be partially saved.';
+  if (msg.includes('auth/unauthorized-domain')) {
+    return 'This site is not registered with Firebase Authentication. Add your host (for example officialsmaj.github.io) in Firebase Console → Authentication → Settings → Authorized Domains, then retry.';
+  }
+  if (msg.includes('auth/operation-not-allowed')) {
+    return 'Email+password sign-in is disabled for this Firebase project. Enable it under Authentication → Sign-in Method before trying again.';
+  }
   return 'Authentication failed. Please try again.';
 };
 
@@ -38,6 +44,7 @@ export const Login = () => {
     try {
       await signInWithEmail(email, password);
     } catch (err: any) {
+      console.error('Sign-in error', err);
       setError(formatAuthError(err));
     } finally {
       setLoading(false);
