@@ -15,6 +15,8 @@ export interface User {
   dateOfBirth?: string;
   verified?: boolean;
   omtBalance?: number;
+  verificationCode?: string | null;
+  verificationExpiry?: number | null;
 }
 
 export interface Course {

@@ -5,6 +5,16 @@ import { auth, db } from '../firebase';
 import { User } from '../types';
 import { handleFirestoreError, OperationType } from '../utils/firestoreErrors';
 
+const VERIFICATION_CODE_TTL = 15 * 60 * 1000; // 15 minutes
+
+const generateVerificationCode = () => {
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  return {
+    code,
+    expiry: Date.now() + VERIFICATION_CODE_TTL,
+  };
+};
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -76,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const firebaseUser = userCredential.user;
     
     // Generate 6-digit verification code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const { code, expiry } = generateVerificationCode();
     
     const newUser: User = {
       uid: firebaseUser.uid,
@@ -93,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await setDoc(doc(db, 'users', firebaseUser.uid), {
         ...newUser,
         verificationCode: code,
+        verificationExpiry: expiry,
       });
     } catch (error) {
       handleFirestoreError(error, OperationType.WRITE, `users/${firebaseUser.uid}`);
@@ -143,10 +154,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     try {
       const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
-      if (userDoc.exists() && userDoc.data().verificationCode === code) {
+      if (!userDoc.exists()) return false;
+
+      const userData = userDoc.data();
+      const storedCode = userData.verificationCode;
+      const expiry = userData.verificationExpiry;
+
+      if (!storedCode) return false;
+
+      if (expiry && Date.now() > expiry) {
+        throw new Error('Verification code has expired. Please request a new one.');
+      }
+
+      if (storedCode === code) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), {
           verified: true,
           verificationCode: null, // Clear code after verification
+          verificationExpiry: null,
         });
         setUser(prev => prev ? { ...prev, verified: true } : null);
         return true;
@@ -161,12 +185,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!auth.currentUser || !user) return;
 
     // Generate new 6-digit verification code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const { code, expiry } = generateVerificationCode();
 
     try {
       // Update Firestore with new code
       await updateDoc(doc(db, 'users', auth.currentUser.uid), {
         verificationCode: code,
+        verificationExpiry: expiry,
       });
 
       // Send verification email via backend
